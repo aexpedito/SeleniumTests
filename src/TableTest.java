@@ -1,14 +1,20 @@
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 
-public class Test {
-
-	public static void main(String[] args) 
+public class TableTest 
+{
+	Table table;
+	
+	@Before
+	public void setUp()
 	{
 		WebDriver driver = new FirefoxDriver();
 		driver.get("https://epptest.vistajet.com/login");		
@@ -29,7 +35,19 @@ public class Test {
 		costCenterItem.click();
 		
 		WebElement tableWeb = driver.findElement(By.id("show_all"));
-		Table table = new Table(tableWeb,driver);
+		this.table = new Table(tableWeb,driver);
+	}
+	
+	@After
+	public void tearDown()
+	{
+		
+	}
+
+	@Test
+	public void findRowInTable() 
+	{
+		
 	}
 
 }

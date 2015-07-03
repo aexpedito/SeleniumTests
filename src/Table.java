@@ -7,15 +7,20 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+import java.sql.*;
 
 
-public class Table 
+
+public class Table
 {
 	private int lines;
 	private int colums;
-	private Object[][] table; // line 0 = <th>, line 1 ... n = <td>
+	private Connection conn;
+	private Statement stm;
+	private String DATABASE_NAME;
+	private String tableName;
 	
-	public Table(WebElement table, WebDriver driver)
+	public Table(WebElement table, WebDriver driver,String databaseName, String tableName)
 	{
 		WebElement tagTHead = table.findElement(By.tagName("thead")); // get table header
 		WebElement tagTBody = table.findElement(By.tagName("tbody")); // get table body				
@@ -26,12 +31,33 @@ public class Table
 		List<WebElement> th = headRows.get(0).findElements(By.tagName("th"));
 		
 		this.lines = headRows.size()+bodyRows.size();
-		this.colums = th.size();
-		System.out.println(this.lines);
-		System.out.println(this.colums);
-		this.table = new Object[lines][colums];
-		refreshData(table);
-		printTable();
+		this.colums = th.size();		
+				
+		try{
+			Class.forName("org.sqlite.JDBC");
+			conn = DriverManager.getConnection("jdbc:sqlite:.\\db\\files\\"+DATABASE_NAME);
+			stm = conn.createStatement();
+			String sql =  "CREATE TABLE IF NOT EXISTS " + tableName +
+	                   " (ID INT PRIMARY KEY NOT NULL," +
+	                   " NAME           TEXT    NOT NULL, " + 
+	                   " AGE            INT     NOT NULL, " + 
+	                   " ADDRESS        CHAR(50), " + 
+	                   " SALARY         REAL);";
+			stm.executeUpdate(sql);
+			sql = "INSERT INTO COMPANY(ID,NAME,AGE,ADDRESS,SALARY) VALUES(1,'aFONSO',12,'ADDRESS',2.1);";
+			stm.executeUpdate(sql);
+			
+			
+			stm.close();
+			//conn.commit();
+			conn.close();
+		}catch (ClassNotFoundException e) 
+		{			
+			e.printStackTrace();
+		}catch (SQLException e) 
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	public void refreshData(WebElement table)
@@ -76,6 +102,11 @@ public class Table
 		}
 		//try to find param in some line
 		
+		return false;
+	}
+	
+	public boolean insertRowInTable(String... param)
+	{
 		return false;
 	}
 	
