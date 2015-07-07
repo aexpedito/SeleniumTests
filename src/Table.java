@@ -19,38 +19,30 @@ public class Table
 	private Statement stm;
 	private String DATABASE_NAME;
 	private String tableName;
+	private String[] headers;
 	
-	public Table(WebElement table, WebDriver driver,String databaseName, String tableName)
+	public Table(WebElement table, WebDriver driver,String databaseName, String tableName, String... headers)
 	{
+		this.DATABASE_NAME=databaseName;
+		this.tableName=tableName;
+		
 		WebElement tagTHead = table.findElement(By.tagName("thead")); // get table header
-		WebElement tagTBody = table.findElement(By.tagName("tbody")); // get table body				
-		
+		WebElement tagTBody = table.findElement(By.tagName("tbody")); // get table body		
 		List<WebElement> headRows = tagTHead.findElements(By.tagName("tr")); //get table rows inside thead
-		List<WebElement> bodyRows = tagTBody.findElements(By.tagName("tr")); //get table rows inside tbody
-		
-		List<WebElement> th = headRows.get(0).findElements(By.tagName("th"));
+		List<WebElement> th = headRows.get(0).findElements(By.tagName("th"));		
+		List<WebElement> bodyRows = tagTBody.findElements(By.tagName("tr")); //get table rows inside tbody		
 		
 		this.lines = headRows.size()+bodyRows.size();
-		this.colums = th.size();		
-				
+		this.colums = th.size();
+		
+		this.headers = new String[headers.length];
+		for(int i=0; i< headers.length; i++)
+			this.headers[i]= headers[i];
+		
 		try{
 			Class.forName("org.sqlite.JDBC");
 			conn = DriverManager.getConnection("jdbc:sqlite:.\\db\\files\\"+DATABASE_NAME);
 			stm = conn.createStatement();
-			String sql =  "CREATE TABLE IF NOT EXISTS " + tableName +
-	                   " (ID INT PRIMARY KEY NOT NULL," +
-	                   " NAME           TEXT    NOT NULL, " + 
-	                   " AGE            INT     NOT NULL, " + 
-	                   " ADDRESS        CHAR(50), " + 
-	                   " SALARY         REAL);";
-			stm.executeUpdate(sql);
-			sql = "INSERT INTO COMPANY(ID,NAME,AGE,ADDRESS,SALARY) VALUES(1,'aFONSO',12,'ADDRESS',2.1);";
-			stm.executeUpdate(sql);
-			
-			
-			stm.close();
-			//conn.commit();
-			conn.close();
 		}catch (ClassNotFoundException e) 
 		{			
 			e.printStackTrace();
@@ -58,26 +50,49 @@ public class Table
 		{
 			e.printStackTrace();
 		}
+		loadTable(headers);
 	}
 	
-	public void refreshData(WebElement table)
+	public void loadTable(String... headers)
 	{
-		
-		WebElement tagTHead = table.findElement(By.tagName("thead")); // get table header		
-		List<WebElement> headRows = tagTHead.findElements(By.tagName("tr"));		
-		
-		for(int i=0; i< headRows.size(); i++) //for each head row
+		String sql ="CREATE TABLE IF NOT EXISTS " + this.tableName + " (";
+			
+		for(int i=0; i< headers.length; i++)
 		{
-			WebElement tr = headRows.get(i);
-			List<WebElement> tdList = tr.findElements(By.tagName("th"));
-			for(int j=0; j< tdList.size(); j++)
-			{
-				Cell cell = new Cell(tdList.get(j));
-				this.table[i][j]=cell;
-				//cell.getText();
-			}
+			sql=sql.concat(headers[i]+" CHAR(50), ");
+			if(i== headers.length-1)
+				sql=sql.concat(headers[i]+" CHAR(50)");
+		}
+		sql=sql.concat(");");	
+		
+		System.out.println(sql);
+			
+		try{
+			stm.executeUpdate(sql);					
+		}catch(Exception ex)
+		{
+			System.out.println(ex.getMessage());
 		}
 		
+	}
+	
+	public void closeDatabase() //drop table
+	{
+		String sql = "DROP TABLE " +tableName;
+		
+		try{
+			stm.executeUpdate(sql);
+			stm.close();
+			conn.close();
+		}catch(Exception ex)
+		{
+			System.out.println(ex.getMessage());
+		}
+	}
+	
+	public void loadData(WebElement table) //read data from table in html
+	{
+
 		WebElement tagTBody = table.findElement(By.tagName("tbody")); // get table body	
 		List<WebElement> bodyRows = tagTBody.findElements(By.tagName("tr"));
 		
@@ -87,14 +102,12 @@ public class Table
 			List<WebElement> tdList = tr.findElements(By.tagName("td"));
 			for(int j=0; j< tdList.size(); j++)
 			{
-				Cell cell = new Cell(tdList.get(j));
-				this.table[i+headRows.size()][j]=cell;
-				//cell.getText();
+				insertRowInTable();
 			}
 		}
 	}	
 	
-	public boolean findRowInTable(String... param)
+	public boolean findRowInTable(String... param) //select from table
 	{
 		if(param.length <1 || param.length >this.colums)
 		{
@@ -105,23 +118,9 @@ public class Table
 		return false;
 	}
 	
-	public boolean insertRowInTable(String... param)
+	public boolean insertRowInTable(String... param) //insert into table
 	{
 		return false;
-	}
-	
-	public void printTable()
-	{
-		for(int i=0; i< this.lines; i++)
-		{
-			for(int j=0; j< this.colums;j++)
-			{
-				Cell cell = (Cell) this.table[i][j];
-				cell.getText();
-			}
-			System.out.println();
-		}
-		
 	}
 	
 }

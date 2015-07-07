@@ -17,7 +17,7 @@ public class TableTest
 	public void setUp()
 	{
 		WebDriver driver = new FirefoxDriver();
-		driver.get("https://epptest.vistajet.com/login");		
+		driver.get("http://192.168.201.127:8084/login");		
 		driver.manage().window().maximize();
 		WebElement login = driver.findElement(By.id("inputEmail"));
 		login.sendKeys("aaa");
@@ -35,7 +35,7 @@ public class TableTest
 		costCenterItem.click();
 		
 		WebElement tableWeb = driver.findElement(By.id("show_all"));
-		this.table = new Table(tableWeb,driver);
+		this.table = new Table(tableWeb,driver,"teste123.db","table","coluna1","coluna2");
 	}
 	
 	@After
@@ -46,6 +46,12 @@ public class TableTest
 
 	@Test
 	public void findRowInTable() 
+	{
+		
+	}
+	
+	@Test
+	public void test00() 
 	{
 		
 	}
