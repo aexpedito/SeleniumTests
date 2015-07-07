@@ -50,7 +50,7 @@ public class Table
 		{
 			e.printStackTrace();
 		}
-		loadTable(headers);
+		//loadTable(headers);
 	}
 	
 	public void loadTable(String... headers)
@@ -59,9 +59,10 @@ public class Table
 			
 		for(int i=0; i< headers.length; i++)
 		{
-			sql=sql.concat(headers[i]+" CHAR(50), ");
 			if(i== headers.length-1)
 				sql=sql.concat(headers[i]+" CHAR(50)");
+			else
+				sql=sql.concat(headers[i]+" CHAR(50), ");			
 		}
 		sql=sql.concat(");");	
 		
@@ -107,13 +108,23 @@ public class Table
 		}
 	}	
 	
-	public boolean findRowInTable(String... param) //select from table
+	public boolean findRowInTable(String... param) //select from table, VALUES TO FIND IN ROW
 	{
 		if(param.length <1 || param.length >this.colums)
 		{
 			return false;
 		}
 		//try to find param in some line
+		String sql = "SELECT ";
+		for(int i=0; i< headers.length; i++)
+		{
+			if(i== headers.length-1)
+				sql=sql.concat(headers[i]+" ");
+			else
+				sql=sql.concat(headers[i]+", ");
+		}
+		sql=sql.concat("FROM "+tableName+ " WHERE(");
+		
 		
 		return false;
 	}
