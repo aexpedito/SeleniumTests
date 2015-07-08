@@ -50,19 +50,19 @@ public class Table
 		{
 			e.printStackTrace();
 		}
-		//loadTable(headers);
+		loadTable(headers);
 	}
 	
 	public void loadTable(String... headers)
 	{
-		String sql ="CREATE TABLE IF NOT EXISTS " + this.tableName + " (";
+		String sql ="CREATE TABLE IF NOT EXISTS \"" + this.tableName.toString().trim().toUpperCase() + "\"(ROW_ID INTEGER PRIMARY KEY AUTOINCREMENT, ";
 			
 		for(int i=0; i< headers.length; i++)
 		{
 			if(i== headers.length-1)
-				sql=sql.concat(headers[i]+" CHAR(50)");
+				sql=sql.concat(headers[i]+" TEXT");
 			else
-				sql=sql.concat(headers[i]+" CHAR(50), ");			
+				sql=sql.concat(headers[i]+" TEXT, ");			
 		}
 		sql=sql.concat(");");	
 		
@@ -72,9 +72,8 @@ public class Table
 			stm.executeUpdate(sql);					
 		}catch(Exception ex)
 		{
-			System.out.println(ex.getMessage());
-		}
-		
+			ex.printStackTrace();
+		}		
 	}
 	
 	public void closeDatabase() //drop table
@@ -131,6 +130,18 @@ public class Table
 	
 	public boolean insertRowInTable(String... param) //insert into table
 	{
+		try {
+			String sql="INSERT INTO \""+this.tableName+ "\" ";
+			//add headers
+			
+			//values from param
+			
+			PreparedStatement ps = this.conn.prepareStatement(sql);
+		} catch (SQLException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return false;
 	}
 	

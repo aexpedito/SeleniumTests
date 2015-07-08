@@ -52,9 +52,8 @@ public class TableTest
 	public void test00() 
 	{
 		WebElement tableWeb = driver.findElement(By.id("show_all"));
-		this.table = new Table(tableWeb,driver,"teste123.db","table","coluna1","coluna2");
-		table.loadTable("col1","col2","col3");
-		//assertEquals();
+		this.table = new Table(tableWeb,driver,"database.db","TABLE","coluna1","coluna2");
+		//assertEquals("CREATE TABLE IF NOT EXISTS \"TABLE\"(");
 	}
 
 }

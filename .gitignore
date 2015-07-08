@@ -1,7 +1,10 @@
 *.class
 *.classpath
+*.db
+*.bd
 
 # Package Files #
 #*.jar
 #*.war
 #*.ear
+/bin/
