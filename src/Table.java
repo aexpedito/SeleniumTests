@@ -21,6 +21,10 @@ public class Table
 	private String tableName;
 	private String[] headers;
 	
+	
+	public Table()
+	{}
+	
 	public Table(WebElement table, WebDriver driver,String databaseName, String tableName, String... headers)
 	{
 		this.DATABASE_NAME=databaseName;
@@ -131,12 +135,37 @@ public class Table
 	public boolean insertRowInTable(String... param) //insert into table
 	{
 		try {
-			String sql="INSERT INTO \""+this.tableName+ "\" ";
+			String sql="INSERT INTO \""+this.tableName.toString().toUpperCase()+ "\"(";
 			//add headers
-			
+			for(int i=0; i< this.headers.length; i++)
+			{
+				if(i== headers.length-1)
+				{
+					sql=sql.concat(headers[i]+ ") ");
+				}
+				else
+				{
+					sql=sql.concat(headers[i]+ ", ");
+				}
+			}
 			//values from param
+			sql=sql.concat("VALUES(");
+			for(int i=0; i< this.headers.length; i++)
+			{
+				if(i== headers.length-1)
+				{
+					sql=sql.concat(headers[i]+ "="+param[i]+");");
+				}
+				else
+				{
+					sql=sql.concat(headers[i]+ "="+param[i]+",");
+				}
+			}
 			
-			PreparedStatement ps = this.conn.prepareStatement(sql);
+			System.out.println(sql);
+			stm.executeUpdate(sql);
+			
+			//PreparedStatement ps = this.conn.prepareStatement(sql);
 		} catch (SQLException e)
 		{
 			// TODO Auto-generated catch block
